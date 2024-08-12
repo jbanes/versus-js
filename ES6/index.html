@@ -10,106 +10,42 @@
     .paged-content { font: bold 250% sans-serif; padding: 25px 10px; }
     </style>
     <script>
-        class PagedContent 
-        {
-            constructor(elements)
-            {
-                this.page = 1;
-                this.pages = 5;
-                this.elements = elements;
-                
-                this.render();
-            }
-            
-            get currentPage()
-            {
-                return this.page;
-            }
-            
-            set currentPage(page)
-            {
-                this.page = page;
-                
-                this.render();
-            }
-            
-            get numberOfPages()
-            {
-                return this.pages;
-            }
-            
-            render()
-            {
-                let page = this.page;
-                
-                this.elements.forEach(function(element, index) {
-                    let info = document.createElement("div");
-                    
-                    info.textContent = "Page " + page;
-                    
-                    element.replaceChildren(info);
-                });
-            }
+    document.addEventListener("DOMContentLoaded", () => {
+        const pagedContent = createPagedContent(document.querySelector("#content"));
+        document.querySelectorAll(".pager").forEach((el, _, els) => createPagination(el, pagedContent, els));
+    });
+
+    function renderPagedContent(curr) {
+        return `Page ${curr}`;
+    }
+
+    function renderPagination(curr, total) {
+        let text = "Page: ";
+        for (let i = 1; i <= total; i++) {
+            text += `<span class="page${i === curr ? " selected" : ""}">${i}</span> `;
         }
-        
-        class Pager 
-        {
-            constructor(elements, content)
-            {
-                this.elements = elements;
-                this.content = content;
-                
-                this.render();
-            }
-            
-            render()
-            {
-                let that = this;
-                let page = this.content.currentPage;
-                let pages = this.content.numberOfPages;
-                
-                function createPage(page, selected)
-                {
-                    let element = document.createElement("span");
-                    
-                    element.classList.add("page");
-                    
-                    if(selected) element.classList.add("selected");
-                    
-                    element.textContent = String(page);
-                    element.addEventListener("click", function() {
-                        that.content.currentPage = page;
-                        
-                        that.render();
-                    });
-                    
-                    return element;
-                }
-                
-                this.elements.forEach(function(element, index) {
-                    let title = document.createElement("span");
-                    
-                    title.textContent = "Page: ";
-                    
-                    element.replaceChildren(title);
-                    
-                    for(let i=0; i<pages; i++)
-                    {
-                        element.appendChild(createPage(i+1, (page === i+1)));
-                    }
-                });
-            }
-        }
-        
-        document.addEventListener("DOMContentLoaded", function() {
-            let content = new PagedContent(document.querySelectorAll("#content"));
-            let pager = new Pager(document.querySelectorAll(".pager"), content);
+        return text;
+    }
+
+    function createPagedContent(el) {
+        el.innerHTML = renderPagedContent(Number(el.dataset.page));
+        return el;
+    }
+
+    function createPagination(paginationEl, pagedContentEl, pagers) {
+        paginationEl.innerHTML = renderPagination(Number(pagedContentEl.dataset.page), Number(pagedContentEl.dataset.pages));
+        paginationEl.addEventListener("click", (e) => {
+            const curr = Number(e.target.textContent);
+            pagedContentEl.innerHTML = renderPagedContent(curr);
+            pagedContentEl.dataset.page = String(curr);
+            pagers.forEach((el) => (el.innerHTML = renderPagination(curr, Number(pagedContentEl.dataset.pages))));
         });
+    }
     </script>
 </head>
 <body>
     <div id="top_pager" class="pager"></div>
-    <div id="content" class="paged-content"></div>
+    <div id="content" class="paged-content" data-page="1" data-pages="5"></div>
     <div id="bottom_pager" class="pager"></div>
 </body>
 </html>
