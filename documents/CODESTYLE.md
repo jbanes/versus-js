@@ -106,6 +106,38 @@ for(var i=0; i<10; i++)
 }
 ```
 
+Anonymous functions may have an extra space at the top for readability.
 
+```
+callback(function() {
+
+    int x = 12;
+
+    console.log(12);
+});
+```
 
 ## Single line control blocks
+
+Single line if statements may be grouped together. Multiline may not be grouped together with single line.
+
+```
+if(x) doX();
+if(y) doY();
+
+if(z)
+{
+    doZ();
+}
+```
+
+Single line control blocks must never wrap. If the content block is on a new line, it must be in curly braces.
+
+```
+if(x) console.log("Hello!");
+
+if(y)
+{
+    console.log("This is a very long line that doesn't make sense to make a single line if.");
+}
+```
