@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Umbrella JS Demonstration</title>
+    <script src="umbrella.min.js"></script>
+    <style>
+      .pager {
+        margin: 5px 10px;
+        user-select: none;
+        -webkit-user-select: none;
+        font-family: sans-serif;
+      }
+      .pager .page {
+        display: inline-block;
+        padding: 0px 5px;
+        cursor: pointer;
+      }
+      .pager .page:active {
+        color: red;
+      }
+      .selected {
+        font-weight: bold;
+        color: red;
+      }
+      .paged-content {
+        font: bold 250% sans-serif;
+        padding: 25px 10px;
+      }
+    </style>
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const PAGES = 5;
+
+        const update = (page = 1) => {
+          u(".paged-content").text(`Page ${page}`);
+          u(".page").removeClass("selected");
+          u(`.page:nth-child(${page + 1})`).addClass("selected");
+        };
+
+        u(".pager")
+          .append("<span>Page: </span>")
+          .append((n) => `<span class="page">${n + 1}</span>`, PAGES);
+
+        update(1);
+        u(".page").on("click", (e) => update(parseInt(e.target.textContent)));
+      });
+    </script>
+  </head>
+  <body>
+    <div id="top_pager" class="pager"></div>
+    <div id="content" class="paged-content"></div>
+    <div id="bottom_pager" class="pager"></div>
+  </body>
+</html>

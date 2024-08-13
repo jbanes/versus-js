@@ -1,67 +1,82 @@
 <!DOCTYPE html>
 <html>
-<head>
+  <head>
     <title>jQuery Demonstration</title>
     <script src="jquery-3.7.1.slim.min.js"></script>
     <style>
-    .pager { margin: 5px 10px; user-select: none; -webkit-user-select: none; font-family: sans-serif; }
-    .pager .page { display: inline-block; padding: 0px 5px; cursor: pointer; }
-    .pager .page:active { color: red; }
-    .selected { font-weight: bold; color: red; }
-    .paged-content { font: bold 250% sans-serif; padding: 25px 10px; }
+      .pager {
+        margin: 5px 10px;
+        user-select: none;
+        -webkit-user-select: none;
+        font-family: sans-serif;
+      }
+      .pager .page {
+        display: inline-block;
+        padding: 0px 5px;
+        cursor: pointer;
+      }
+      .pager .page:active {
+        color: red;
+      }
+      .selected {
+        font-weight: bold;
+        color: red;
+      }
+      .paged-content {
+        font: bold 250% sans-serif;
+        padding: 25px 10px;
+      }
     </style>
     <script>
-        $.fn.pagedContent = function(operation, value) {
-            
-            if($.isEmptyObject(this.data())) 
-            {
-                this.data("page", 1);
-                this.data("pages", 5);
-            }
-            
-            if(operation === "page" && value) this.data("page", value);
-            else if(operation === "page") return this.data("page");
-            else if(operation === "pages") return this.data("pages");
+      $.fn.pagedContent = function (operation, value) {
+        if ($.isEmptyObject(this.data())) {
+          this.data("page", 1);
+          this.data("pages", 5);
+        }
 
-            //Render
-            this.empty().append("<div>").text("Page " + this.data("page"));
-            
-            return this;
-        };
-        
-        $.fn.pager = function(content) {
-            let that = this;
-            let pages = content.pagedContent("pages");
-            let page = content.pagedContent("page");
-            
-            function createPage(page, selected)
-            {
-                return $("<span>")
-                            .addClass("page" + (selected ? " selected" : ""))
-                            .text(page)
-                            .click(function() {
-                                content.pagedContent("page", page);
-                                that.pager(content);
-                            });
-            }
-            
-            this.empty().append($("<span>").text("Page: "));
-            
-            for(let i=0; i<pages; i++)
-            {
-                this.append(createPage(i+1, (page === i+1)));
-            }
-        };
-        
-        $(document).ready(function() {
-            $("#content").pagedContent();
-            $(".pager").pager($("#content"));
-        });
+        if (operation === "page" && value) this.data("page", value);
+        else if (operation === "page") return this.data("page");
+        else if (operation === "pages") return this.data("pages");
+
+        //Render
+        this.empty()
+          .append("<div>")
+          .text("Page " + this.data("page"));
+
+        return this;
+      };
+
+      $.fn.pager = function (content) {
+        let that = this;
+        let pages = content.pagedContent("pages");
+        let page = content.pagedContent("page");
+
+        function createPage(page, selected) {
+          return $("<span>")
+            .addClass("page" + (selected ? " selected" : ""))
+            .text(page)
+            .click(function () {
+              content.pagedContent("page", page);
+              that.pager(content);
+            });
+        }
+
+        this.empty().append($("<span>").text("Page: "));
+
+        for (let i = 0; i < pages; i++) {
+          this.append(createPage(i + 1, page === i + 1));
+        }
+      };
+
+      $(document).ready(function () {
+        $("#content").pagedContent();
+        $(".pager").pager($("#content"));
+      });
     </script>
-</head>
-<body>
+  </head>
+  <body>
     <div id="top_pager" class="pager"></div>
     <div id="content" class="paged-content"></div>
     <div id="bottom_pager" class="pager"></div>
-</body>
+  </body>
 </html>
