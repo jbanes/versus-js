@@ -10,61 +10,61 @@
     .paged-content { font: bold 250% sans-serif; padding: 25px 10px; }
     </style>
     <script>
-    	/*
-			type Pager = {
-			    current: number;
-			    total: number;
-			    content: NodeList;
-			    nav: NodeList;
-			};
-			declare function el(name: string, content: string): HTMLElement;
-			declare function onClick(pager: Pager, number: number): void;
-			declare function render(pager: Pager): void;
-		*/
+        /*
+            type Pager = {
+                current: number;
+                total: number;
+                content: NodeList;
+                nav: NodeList;
+            };
+            declare function el(name: string, content: string): HTMLElement;
+            declare function onClick(pager: Pager, number: number): void;
+            declare function render(pager: Pager): void;
+        */
 
-		function el(name, content) {
-			let e = document.createElement(name)
-		    e.innerText = content
-		    return e
-		}
+        function el(name, content) {
+            let e = document.createElement(name)
+            e.innerText = content
+            return e
+        }
 
-		function onClick(pager, number) {
-		    pager.current = number
-		    render(pager)
-		}
+        function onClick(pager, number) {
+            pager.current = number
+            render(pager)
+        }
 
-		function render(pager) {
-		    // render page content across matching selectors
-		    for (let element of pager.content) {
-		      element.replaceChildren(el("div", "Page " + pager.current))
-		    }
+        function render(pager) {
+            // render page content across matching selectors
+            for (let element of pager.content) {
+              element.replaceChildren(el("div", "Page " + pager.current))
+            }
 
-		    // render page nav across selectors
-		    for (let element of pager.nav) {
-		        let links = []
-		        links.push(el("span", "Page: "))
-		        for (let i = 1; i <= pager.total; i++) {
-		            let link = el("span", String(i))
-		            link.classList.add("page")
-		            if (i === pager.current) {
-		                link.classList.add("selected")
-		            }
-		            link.onclick = onClick.bind(null, pager, i)
-		            links.push(link)
-		        }
-		        element.replaceChildren(...links)
-		    }
-		}
+            // render page nav across selectors
+            for (let element of pager.nav) {
+                let links = []
+                links.push(el("span", "Page: "))
+                for (let i = 1; i <= pager.total; i++) {
+                    let link = el("span", String(i))
+                    link.classList.add("page")
+                    if (i === pager.current) {
+                        link.classList.add("selected")
+                    }
+                    link.onclick = onClick.bind(null, pager, i)
+                    links.push(link)
+                }
+                element.replaceChildren(...links)
+            }
+        }
 
-		document.addEventListener("DOMContentLoaded", function() {
-		    let pager = {
-		        current: 1,
-		        total: 5,
-		        content: document.querySelectorAll("#content"),
-		        nav: document.querySelectorAll(".pager")
-		    }
-		    render(pager)
-		})
+        document.addEventListener("DOMContentLoaded", function() {
+            let pager = {
+                current: 1,
+                total: 5,
+                content: document.querySelectorAll("#content"),
+                nav: document.querySelectorAll(".pager")
+            }
+            render(pager)
+        })
     </script>
 </head>
 <body>
