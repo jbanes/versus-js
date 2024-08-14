@@ -121,6 +121,20 @@ callback(function() {
 });
 ```
 
+Different types of statements (e.g. assignments, function calls, self-increments) are separated by an empty line between them. Like types are grouped together.
+
+```
+foo = "bar";
+xyz = 12;
+
+abc++;
+def--;
+
+processStep1();
+processStep2();
+
+```
+
 ## Single line control blocks
 
 Single line if statements may be grouped together. Multiline may not be grouped together with single line.
