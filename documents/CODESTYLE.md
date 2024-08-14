@@ -110,7 +110,7 @@ for(var i=0; i<10; i++)
 }
 ```
 
-Anonymous functions may have an extra space at the top for readability.
+Anonymous functions may have an extra line at the top for readability.
 
 ```
 callback(function() {
