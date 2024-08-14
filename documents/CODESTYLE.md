@@ -40,7 +40,7 @@ setTimeout(function() {
 
 $.fn.feature = function() {
     // do stuff
-}
+};
 ```
 
 ## Wrapped statements
