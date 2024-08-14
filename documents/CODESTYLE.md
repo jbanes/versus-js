@@ -37,6 +37,10 @@ setTimeout(function() {
 [1,2,3].forEach((value, index) => {
     console.log(value);
 });
+
+$.fn.feature = function() {
+    // do stuff
+}
 ```
 
 ## Wrapped statements
