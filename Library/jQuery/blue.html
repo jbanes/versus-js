@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>jQuery Demonstration - Alt Pager</title>
+    <script src="jquery-3.7.1.slim.min.js"></script>
+    <script src="content.js"></script>
+    <script src="pager.js"></script>
+    <style>
+    body { background-color: deepskyblue; color: black; }
+    .pager { margin: 5px 10px; user-select: none; -webkit-user-select: none; font-family: sans-serif; }
+    .pager .page { display: inline-block; margin: 1px 1px; padding: 2px 5px; cursor: pointer; border: 1px solid #666666; background-color: #CCCCCC; }
+    .pager .page:active { color: red; }
+    .selected { font-weight: bold; color: white; border: 1px solid #CCCCCC !important; background-color: #666666 !important; }
+    .paged-content { font: bold 250% sans-serif; padding: 25px 10px; width: 175px; text-align: center; border: 2px solid black; background-color: #CCCCCC; }
+    </style>
+    <script>
+        $(document).ready(function() {
+            $("#content").pagedContent();
+            $(".pager").pager($("#content"));
+        });
+    </script>
+</head>
+<body>
+    <div id="top_pager" class="pager"></div>
+    <div id="content" class="paged-content"></div>
+    <div id="bottom_pager" class="pager"></div>
+</body>
+</html>

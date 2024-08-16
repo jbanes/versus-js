@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ES6 Demonstration - Alt Pager</title>
+    <script src="content.js"></script>
+    <script src="pager2.js"></script>
+    <style>
+    body { margin-top: 50px; }
+    .pager { margin: 5px 10px; user-select: none; -webkit-user-select: none; font-family: sans-serif; max-width: 100px; margin: auto; }
+    .pager .page { display: inline-block; padding: 0px 5px; cursor: pointer; }
+    .pager .page:active { color: red; }
+    .selected { font-weight: bold; color: red; }
+    .paged-content { font: bold 250% sans-serif; padding: 10px 10px; max-width: 150px; margin: 5px auto; background: #F0F0F0; border-radius: 10px; text-align: center; }
+    #bottom_pager select {  width: 100px; }
+    #top_bar { position: fixed; top: 0px; left: 0px; width: 100%; font-family: sans-serif; color: white; background-color: deepskyblue; text-align: right; padding: 5px 0px;}
+    #top_bar div { display: inline-block; }
+    </style>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            let content = new PagedContent(document.querySelectorAll("#content"));
+            let pager = new Pager(document.querySelectorAll(".pager"), content);
+        });
+    </script>
+</head>
+<body>
+    <div id="top_bar">
+        <div>Select a page:</div>
+        <div id="top_pager" class="pager"></div>
+    </div>
+    <div id="content" class="paged-content"></div>
+    <div id="bottom_pager" class="pager"></div>
+</body>
+</html>

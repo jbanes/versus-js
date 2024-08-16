@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>jQuery Demonstration - White</title>
+    <script src="jquery-3.7.1.slim.min.js"></script>
+    <script src="content.js"></script>
+    <script src="pager.js"></script>
+    <style>
+    .pager { margin: 5px 10px; user-select: none; -webkit-user-select: none; font-family: sans-serif; }
+    .pager .page { display: inline-block; padding: 0px 5px; cursor: pointer; }
+    .pager .page:active { color: red; }
+    .selected { font-weight: bold; color: red; }
+    .paged-content { font: bold 250% sans-serif; padding: 25px 10px; }
+    </style>
+    <script>
+        $(document).ready(function() {
+            $("#content").pagedContent();
+            $(".pager").pager($("#content"));
+        });
+    </script>
+</head>
+<body>
+    <div id="content" class="paged-content"></div>
+    <div id="bottom_pager" class="pager"></div>
+</body>
+</html>
