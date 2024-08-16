@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ES6 Demonstration</title>
+    <style>
+    .pager { margin: 5px 10px; user-select: none; -webkit-user-select: none; font-family: sans-serif; }
+    .pager .page { display: inline-block; padding: 0px 5px; cursor: pointer; }
+    .pager .page:active { color: red; }
+    .selected { font-weight: bold; color: red; }
+    .paged-content { font: bold 250% sans-serif; padding: 25px 10px; }
+    </style>
+    <script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const pagedContent = createPagedContent(document.querySelector("#content"));
+        document.querySelectorAll(".pager").forEach((el, _, els) => createPagination(el, pagedContent, els));
+    });
+
+    function renderPagedContent(curr) {
+        return `Page ${curr}`;
+    }
+
+    function renderPagination(curr, total) {
+        let text = "Page: ";
+        for (let i = 1; i <= total; i++) {
+            text += `<span class="page${i === curr ? " selected" : ""}">${i}</span> `;
+        }
+        return text;
+    }
+
+    function createPagedContent(el) {
+        el.innerHTML = renderPagedContent(Number(el.dataset.page));
+        return el;
+    }
+
+    function createPagination(paginationEl, pagedContentEl, pagers) {
+        paginationEl.innerHTML = renderPagination(Number(pagedContentEl.dataset.page), Number(pagedContentEl.dataset.pages));
+        paginationEl.addEventListener("click", (e) => {
+            const curr = Number(e.target.textContent);
+            pagedContentEl.innerHTML = renderPagedContent(curr);
+            pagedContentEl.dataset.page = String(curr);
+            pagers.forEach((el) => (el.innerHTML = renderPagination(curr, Number(pagedContentEl.dataset.pages))));
+        });
+    }
+    </script>
+</head>
+<body>
+    <div id="top_pager" class="pager"></div>
+    <div id="content" class="paged-content" data-page="1" data-pages="5"></div>
+    <div id="bottom_pager" class="pager"></div>
+</body>
+</html>
