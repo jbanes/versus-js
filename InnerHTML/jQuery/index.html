@@ -13,7 +13,7 @@
     <script>
         $.fn.pagedContent = function(operation, value) {
             if($.isEmptyObject(this.data())) {
-                this.data("page", (operation && operation.page) || 5);
+                this.data("page", (operation && operation.page) || 1);
                 this.data("pages", (operation && operation.pages) || 5);
             }
             if(operation === "page" && value) this.data("page", value);
