@@ -1,0 +1,1022 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Analysis: jQuery versus ES6 + DOM - Who's more productive?</title>
+    <script src="jquery-3.7.1.slim.min.js" defer></script>
+    <script src="codeblock.js" defer></script>
+    <style>
+        body { margin: 2rem 6rem; font: 14pt Helvetica, Arial, sans-serif }
+        
+        h1 { font: bold 250% sans-serif; padding: 10px 10px; margin: 5px auto 2rem; background: #F0F0F0; border-radius: 10px; text-align: center; }
+        h2 { font-size: 2em; margin-top: 4rem; }
+        h3 { font-size: 1.5em; }
+        
+        a { color: rgb(15, 20, 25); }
+        a:hover { color: rgb(29, 155, 240); }
+        
+        hr { margin-top: 4rem; }
+        
+        .examples { display: flex; justify-content: center; } 
+        .example { border: 1px solid #AAAAAA; margin: 10px; }
+                
+        code { white-space: pre-wrap; font-family: SF Mono, monospace; text-rendering: optimizeSpeed; }
+        code span { margin: 0; padding: 0; }
+        code.codeblock { white-space: pre; font-size: 10pt; line-height: 150%; }
+        code.codeblock .linenumbers { background-color: #e9e8e3; text-align: right; padding: 5px 5px; border-left: solid 1px #c2c2c2; border-right: solid 1px #d6d5d2; }
+        code.codeblock .spacer { display: inline-block; width: 8px; }
+        code.codeblock .block { background-color: #fbfaf6; padding: 5px 5px; }
+        code.codeblock .comment { color: rgb(150, 150, 150); }
+        code.codeblock .field { color: rgb(206, 84, 184); }
+        code.codeblock .function { font-weight: bold; }
+        code.codeblock .global { color: rgb(159, 13, 121); }
+        code.codeblock .keyword { color: rgb(51, 107, 221); }
+        code.codeblock .string { color: rgb(30, 147, 71); }
+        code.codeblock .highlight { background-color: #f4b759; }
+        
+        .codeblocks { display: flex; flex-wrap: wrap; justify-content: center; margin: 1rem 0rem; width: 100%; overflow-x: auto; }
+        .codeblocks > div { margin: 0.2rem; }
+        
+        p { line-height: 150%; }
+        p > code, li > code { background-color: #f0f1f2; padding: 0.2em; font-size: 10pt; line-height: 150%; }
+        ul, ol { line-height: 175%; }
+        ul li, ol li { margin-bottom: 0.3em; }
+        
+        .iframes { display: flex; justify-content: center; margin: 3rem 1rem; }
+        .iframes > iframe { margin-left: 1rem; margin-right: 1rem; border: 1px solid #666; }
+        
+        .toc { border-left: 2px solid #AAA; padding: 0.1rem 1rem; }
+        .toc ul, .toc ol { line-height: 140%; }
+        .toc ul li, .toc ol li { margin-bottom: 0.1em; }
+        .toc a { text-decoration: none;}
+        
+        table.stats { width: 100%; border: 2px solid black; padding: 0px; border-collapse: collapse; }
+        table.stats thead { font-weight: bold; }
+        table.stats td { border: 1px solid black; padding: 0.3em 0.5em; margin: 0px; }
+    </style>
+</head>
+<body>
+    <div>
+        <h1>jQuery versus ES6 + DOM - Who's more productive?</h1>
+    </div>
+    <div class="toc">
+        <p><b>Table of Contents</b></p>
+        <ul>
+            <li>
+                <a href="#summary">Summary</a>
+            </li>
+            <li>
+                <a href="#overview">Overview</a>
+                <ul>
+                    <li><a href="#howthisstarted">How this all started</a></li>
+                    <li><a href="#mygoals">My Goals</a></li>
+                    <li><a href="#codedesign">Code Design</a></li>
+                    <li><a href="#productivity">Download Size vs. Productivity</a></li>
+                    <li><a href="#codingstyle">Coding Style</a></li>
+                    <li><a href="#notacodingcompetition">Not a Coding Competition</a></li>
+                    <li><a href="#badfaith">“Bad Faith” concerns</a></li>
+                </ul>
+            </li>
+            <li>
+                <a href="#findings">Findings</a>
+                <ul>
+                    <li><a href="#purejssubmission">Travis Wagner’s Pure Javascript (ES6) Submission</a></li>
+                    <li><a href="#codesize">Code Size</a></li>
+                    <li><a href="#bugsandfixes">Bugs & Fixes</a></li>
+                    <li><a href="#semanticdifferences">Semantic Differences & Adjustments</a></li>
+                    <li><a href="#componentmodel">Component Model</a></li>
+                    <li><a href="#subjectiveopinion">Subjective Opinion</a></li>
+                    <li><a href="#objectiveanalysis">Objective Analysis</a></li>
+                    <li><a href="#jqueryrequired">Is jQuery no longer required?</a></li>
+                </ul>
+            </li>
+            <li><a href="#stateofdiscourse">State of Discourse</a></li>
+            <li><a href="#finalthoughts">Final Thoughts</a></li>
+        </ul>
+    </div>
+    <div id="summary">
+        <h2>Summary</h2>
+    </div>
+    <div>
+        <p>Is jQuery still more productive? Or is jQuery dead? Has ES6 and modern DOM replaced it?</p>
+        <p>These are the questions that I and most of X/Twitter have been wrestling with.</p>
+        <p>Thanks to Travis Wagner’s submission we now how a clear understanding 
+            on whether jQuery has been replaced or not. The surprising answer is it depends on 
+            how you wrote your jQuery. The following two blocks of code are functionally equivalent:</p>
+    </div>
+    <div class="codeblocks">
+        <div>
+            <code class="javascript" min-width="486px">
+            let div = $("&lt;div&gt;")
+                .addClass(className)
+                .css("font-weight", (selected ? "bold" : "normal"))
+                .text("This is a test element);
+                
+            parentNode.empty().append(div);
+            </code>
+        </div>
+        <div>
+            <code class="javascript" min-width="486px">
+            let html = `&lt;div class="${className}" ` +
+                       `style="${(selected ? "bold" : "normal")}"&gt;` +
+                       `This is a test element` +
+                        `&lt;/div&gt`;
+            
+            parentNode.html(html);
+            </code>
+        </div>
+    </div>
+    <div>
+        <p>The left implementation constructs the DOM programmatically and takes less code to 
+            write in jQuery over an equivalent implementation written in ES6 + DOM. The right 
+            version uses an HTML templating approach and does not benefit from using jQuery 
+            over modern ES6 + DOM. This has lead to a battle where deeply held beliefs are 
+            being defended by “Templaters” versus “Structuralists” without surfacing the 
+            underlying assumptions.</p>
+        <p>Thus the findings are:</p>
+        <ul>
+            <li>jQuery is no longer necessary if you template HTML in Javascript</li>
+            <li>Inline templating of HTML in Javascript is still quite risky and is more limiting</li>
+            <li>Structural creation of HTML elements benefits greatly from jQuery</li>
+            <li>jQuery appears to be at least 30% more code efficient if taking the structural approach</li>
+            <li>The application of the two approaches depends on the particular need. There is no one “right” way.</li>
+            <li>Templaters and Structuralists could benefit from understanding each other’s viewpoint</li>
+            <li>Javascript engineers should understand both approaches and use the method appropriate to their need</li>
+        </ul>
+        <p>Read on for the full story!</p>
+    </div>
+    <div id="overview">
+        <h2>Overview</h2>
+    </div>
+    <div id="howthisstarted">
+        <h3>How this all started</h3>
+    </div>
+    <div>
+        <p>On August 9th, the HTMX account on X (née Twitter) did what HTMX does best: Start a 
+            controversy. This time about jQuery.</p>
+    </div>
+    <div align="center">
+        <blockquote class="twitter-tweet"><p lang="en" dir="ltr">i can respect this position <a href="https://t.co/jKPwhFcjBR">pic.twitter.com/jKPwhFcjBR</a></p>&mdash; htmx.org / CEO of why so serious? (same thing) (@htmx_org) <a href="https://twitter.com/htmx_org/status/1822130751464259861?ref_src=twsrc%5Etfw">August 10, 2024</a></blockquote> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+    </div>
+    <div>
+        <p>This lead to numerous posts about how dead jQuery is and how it has been replaced by recent 
+            Javascript features. Many posters referred to these features as ES6, though 
+            <code>document.querySelector()</code> is the DOM enhancement most cited.</p>
+        <p>I have heard this argument before, but I’ve never understood it. While 
+            <code>document.querySelectorAll()</code> can perform the same search as jQuery, it 
+            cannot apply a change across all the elements without iterating and updating each 
+            element individually. In my mind this provides jQuery with a critical advantage that 
+            helps keep code sizes small. So I challenged posters to demonstrate how jQuery has 
+            been replaced.</p>
+        <p>The results of these challenges were mostly ineffective. The answers either missed the 
+            question about updating multiple elements or they dismissed it as unimportant. The 
+            mantra was, “I can replace your jQuery with 4 lines of Javascript.”</p>
+        <p>This “4 lines of Javascript” claim seemed unlikely, but we weren’t getting anywhere with 
+            the conversation. So I tried a different tactic. I setup a 
+            <a href="https://github.com/jbanes/versus-js/tree/main/Original">GitHub repo</a> with a 
+            minimal benchmark of code to demonstrate my understanding and give others an opportunity to 
+            prove their point. I then issued the challenge on X to those I was discussing this with.</p>
+    </div>
+    <div align="center">
+        <blockquote class="twitter-tweet"><p lang="en" dir="ltr">𝗨𝘀𝗶𝗻𝗴 𝗷𝗤𝘂𝗲𝗿𝘆 𝗿𝗲𝘀𝘂𝗹𝘁𝗲𝗱 𝗶𝗻 𝟱𝟯% 𝗹𝗲𝘀𝘀 𝗝𝗮𝘃𝗮𝘀𝗰𝗿𝗶𝗽𝘁 𝗮𝗻𝗱 𝟯𝟲% 𝘀𝗺𝗮𝗹𝗹𝗲𝗿 𝗳𝗶𝗹𝗲 𝘀𝗶𝘇𝗲 𝗼𝘃𝗲𝗿 𝗘𝗦𝟲<br><br>I did a bake-off benchmark between jQuery and raw-dogging ES6 here: <a href="https://t.co/eLNo0QjsuI">https://t.co/eLNo0QjsuI</a><br><br>Despite the (apparently?) “common…</p>&mdash; Jerason Banes (@ClassicGamerTWR) <a href="https://twitter.com/ClassicGamerTWR/status/1822691525463347442?ref_src=twsrc%5Etfw">August 11, 2024</a></blockquote> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+    </div>
+    <div id="mygoals">
+        <h3>My goals</h3>
+    </div>
+    <div>
+        <p>I want nothing more than for jQuery to be no longer necessary. Make it dead. No replacement. 
+            Just built-in browser functionality.</p>
+        <p>This point seems to confuse a lot of respondents. I’m not arguing jQuery is superior. I’m 
+            arguing that we still haven’t replaced it. Which is massively disappointing to me. When 
+            someone says, <i>“I can replace jQuery with 4 lines of Javascript,”</i> I want it to be true! 
+            That would be a fantastic world to live in with fewer dependencies and faster development 
+            times.</p>
+        <p>I don’t believe solutions like React, Vue, or Angular are replacements for jQuery. They are 
+            tools for SPA development. An approach which has merit, but I feel is massively overused. 
+            In my consulting work I have seen jQuery and related components be far more effective in 
+            80-90% of the use cases than React or Angular. Nearly every decision to use the latter were 
+            decisions made in error. The applications ended up as a multipage design crammed into a 
+            monopage download. Which meant the developers were fighting the very tooling they selected to 
+            make their lives easier.</p>
+        <p>Contrast this with brand new jQuery deployments. These are typically done very quickly with 
+            few conflicts between engineers. The results tend to be very performant and successful. Even 
+            when skills are limited. (Hashtag 
+            <a href="https://www.twitter.com/search?q=%23skillissues">#skillissues</a>)</p>
+    </div>
+    <div id="codedesign">
+        <h3>Code Design</h3>
+    </div>
+    <div>
+        <p>To facilitate a successful conversation I needed code that represented real-world use cases. 
+            Coming from a background in large-scale data analytics, a paginated table is a common 
+            component. The component is actually many bundled components consisting of the core table component 
+            itself with no controls other than sorting, a paginator component to control page display, 
+            and numerous components to manipulate filtering. The components can be composed in various 
+            ways to produce an interface tailored to the data set. </p>
+    </div>
+    <div>
+        <div style="margin-top: -1rem;"><img src="franchises.svg" alt="Example mockup of a paginated table interface"></div>
+        <div style="text-align: center; margin-top: -3.5rem; margin-bottom: 4rem;"><i>Example of a paginated table interface</i></div>
+    </div>
+    <div>
+        <p>The components need bi-directional communication to both update the table as well as ensure 
+            that changes to the table cause components to update themselves. Distilling this down to 
+            the minimum functionality to, I came up with the following page.</p>
+    </div>
+    <div class="iframes">
+        <iframe width="260" height="180" src="https://jbanes.github.io/versus-js/Original/jQuery/index.html"></iframe>
+        <div>
+            <div style="margin-top: 0.3em;"><i>jQuery paginated implementation</i></div>
+            <div style="font-size: 80%; margin-top: 2rem;">
+                [<a href="https://github.com/jbanes/versus-js/blob/main/Original/jQuery/index.html">Code</a>] 
+                [<a href="https://jbanes.github.io/versus-js/Original/jQuery/index.html">Direct Link</a>]
+            </div>
+        </div>
+    </div>
+    <div>
+        <p>This maintains the component model, the composability, and minimal bi-directional 
+            communication while simultaneously keeping the entire project at under 100 lines 
+            of Javascript. It provides a real-world analog without all the complexity of a 
+            real-world application.</p>
+        <p>I then created a “pure” ES6 version, swapping the jQuery components for Classes. 
+            Classes are the idiomatic standard for Web Components and seemed like a good analog 
+            to jQuery components, allowing for a like-to-like code comparison.</p>
+    </div>
+    <div class="iframes">
+        <iframe width="260" height="180" src="https://jbanes.github.io/versus-js/Original/ES6/index.html"></iframe>
+        <div>
+            <div style="margin-top: 0.3em;"><i>ES6 paginated implementation</i></div>
+            <div style="font-size: 80%; margin-top: 2rem;">
+                [<a href="https://github.com/jbanes/versus-js/blob/main/Original/ES6/index.html">Code</a>] 
+                [<a href="https://jbanes.github.io/versus-js/Original/ES6/index.html">Direct Link</a>]
+            </div>
+        </div>
+    </div>
+    <div>
+        <p>This comparison resulted in the following code sizes:</p>
+    </div>
+    <div>
+        <table class="stats">
+            <thead>
+                <tr>
+                    <td>Technology</td>
+                    <td>Total LOC</td>
+                    <td>Javascript LOC</td>
+                    <td>File Size</td>
+                    <td>Total Download Size</td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>jQuery</td>
+                    <td>67</td>
+                    <td>45</td>
+                    <td>2,289 bytes</td>
+                    <td>72,553 bytes</td>
+                </tr>
+                <tr>
+                    <td>ES6</td>
+                    <td>115</td>
+                    <td>94</td>
+                    <td>3,567 bytes</td>
+                    <td>3,567 bytes</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div>
+        <p>Using jQuery resulted in 53% less Javascript and 36% smaller file size over ES6. The 
+            jQuery code achieves this through a much higher code density.</p>
+    </div>
+    <div id="productivity">
+        <h3>Download Size vs. Productivity</h3>
+    </div>
+    <div>
+        <p>Download size is obviously a concern for any web developer. Smaller downloads can lead 
+            to faster initial page loads by optimizing network time. However, it is only one axis 
+            of analysis.</p>
+        <p>As I pointed out in the original analysis and is made clear by the table above, the 
+            smaller jQuery size only matters if an application is scaled enough to make up for 
+            the 70KB of the library. Which is perfectly doable if you cache a single copy of 
+            jQuery across pages.</p>
+        <p>But that is not the focus of my investigation. </p>
+        <p>In fact, it might surprise you to know that you’ve loaded the jQuery library at least 
+            5 times when you loaded this page. It’s unlikely you noticed as they are all set to 
+            load after the initial page has been retrieved. Thus we can see that code size is not 
+            the only method of achieving a better experience.</p>
+        <p>Instead, the focus for me is on <b>Productivity</b>. i.e. How fast can a team deliver “correct” 
+            code to production. </p>
+        <p>Productivity is going to be heavily affected by quality of requirements and proper alignment 
+            of technology selection. If and only if these factors are correctly handled will the jQuery 
+            vs. ES6 question matter. So this matters to me, but not everyone will share my interest as 
+            many have more basic concerns. e.g. If you incorrectly select React despite a misalignment 
+            with that technology, no amount of code size improvement will help. Your team will be 
+            spending their time fighting their technology stack.</p>
+        <p>Assuming all other factors are equal, how do we compare productivity? The best metric we have 
+            is lines of code (LOC). As noted in Fred Brooks seminal work <i>The Mythical 
+            Man Month</i>, lines of code written across a given time period is a relatively fixed metric. 
+            Brooks and his colleagues observed that if the same functionality could be delivered in fewer 
+            lines of code the resulting program would be completed faster. And with higher quality 
+            since the human errors per KLOC (1000 lines of code) also stays relatively fixed.</p>
+        <p>Thus we can infer that the technology producing the fewest lines of code for the same 
+            functionality results in greater productivity.</p>
+        <p>This observation is very powerful and represents the reason why we moved from Assembly to 
+            higher level languages like C/C++, Pascal, Java, Python, etc. The 
+            reasoning may seem counter-intuitive at first, but it makes sense when you think about it.</p>
+        <p>Which is easier to reason on: CPU registers holding comparison results driving conditional jumps... or a for 
+            loop? Most would say “for loop” without batting an eye. It’s just a simpler abstraction 
+            than direct manipulation of the hardware.</p>
+        <p>With the metric established I drew the following conclusion: In this small benchmark jQuery 
+            appeared to be 30-50% more productive.</p>
+    </div>
+    <div id="codingstyle">
+        <h3>Coding Style</h3>
+    </div>
+    <div>
+        <p>The primary issue with using LOC is that the metric is highly sensitive to code style. 
+            Most languages have an SLOC (Source Lines of Code) metric that can be used to adapt to 
+            various coding styles. For example, Java has NCSS (Non-comment Source Statements) that 
+            allows for easy comparison of LOCs. At the time of writing I am unaware of tools to 
+            obtain such a metric for Javascript.</p>
+        <p>In a best attempt to compensate for this, a 
+            <a href="https://github.com/jbanes/versus-js/blob/main/documents/CODESTYLE.md">standardized 
+            coding style</a> was used. The chosen style is a pragmatic one, using Allman for general 
+            control structures/functions while still allowing practical concessions like single-line 
+            control statements. It takes advantage of intentional breaks in normalized styling to 
+            communicate information such as anonymous inner functions. This allows for strong 
+            readability and fast skimming of code but is inefficient with vertical space. </p>
+        <p>The chosen style was intentionally a real-world coding style used by millions of lines 
+            of code and numerous teams.</p>
+        <p>However, this has unintentionally caused some concerns which will need to be discussed.</p>
+    </div>
+    <div id="notacodingcompetition">
+        <h3>Not a Coding Competition</h3>
+    </div>
+    <div>
+        <p>Most of the submissions I received seemed to think the goal was to produce the smallest 
+            amount of code possible for the minimalist functionality shown on screen. To that end, 
+            they typically stripped away the component model and sometimes even modified 
+            functionality to make it easier to reduce code sizes. The code was small 
+            while lacking any form of reusability. It proved nothing about jQuery versus ES6 
+            approaches.</p>
+        <p>Trying to correct this misconception was met with fierce negativity, arguing that the 
+            code in place did not present reusability and therefore such an argument 
+            was invalid. This continued to miss the point as the code is very clearly designed 
+            for reusability. To prove this here are 
+            <a href="https://github.com/jbanes/versus-js/tree/main/Library">three examples</a> of 
+            the code being reused:</p>
+    </div>
+    <div class="iframes">
+        <iframe width="260" height="180" src="https://jbanes.github.io/versus-js/Library/jQuery/white.html"></iframe>
+        <iframe width="260" height="180" src="https://jbanes.github.io/versus-js/Library/jQuery/blue.html"></iframe>
+        <iframe width="260" height="180" src="https://jbanes.github.io/versus-js/Library/jQuery/alternate.html"></iframe>
+    </div>
+    <div>
+        <p>The first two example use the original code with zero changes other than to split the 
+            components into their own JS files. Yet we see radically different layouts and 
+            experiences due to the HTML and CSS layouts.</p>
+        <p>The third example seamlessly swaps the original pager with an alternate implementation 
+            and demonstrates how functionality remains. It even goes as far as to make one of the 
+            visible pagers a permanent fixture in a bar at the top of the window. It will remain 
+            visible even if the page were to scroll.</p>
+        <p>All of this is to demonstrate the original purpose: real-world analog code that can be 
+            updated to demonstrate how jQuery has been made obsolete. The expectation is that any 
+            reimplementation would focus on the replacement of jQuery. Not on trying to make as 
+            tight of code as possible. Something which is rarely the focus of shipping software.</p>
+    </div>
+    <div id="badfaith">
+        <h3>“Bad Faith” concerns</h3>
+    </div>
+    <div>
+        <p>One of the concerns raised was that this was “the most bad faith implementation ever,”
+            with the implication that the jQuery code was intentionally written to be smaller than 
+            the ES6. The motivation for this claim was apparently the ES6 class accessors versus 
+            the jQuery approach of using if/else checks. </p>
+    </div>
+    <div class="codeblocks">
+        <div>
+            <code class="javascript" start-line="24">
+                get currentPage()
+                {
+                    return this.page;
+                }
+
+                set currentPage(page)
+                {
+                    this.page = page;
+
+                    this.render();
+                }
+
+                get numberOfPages()
+                {
+                    return this.pages;
+                }
+            </code>
+        </div>
+        <div>
+            <code class="javascript" start-line="22">
+            if(operation === "page" &amp;&amp; value) this.data("page", value);
+            else if(operation === "page") return this.data("page");
+            else if(operation === "pages") return this.data("pages");
+
+            //Render
+            this.empty().append("&lt;div&gt;").text("Page " + this.data("page"));
+            </code>
+        </div>
+    </div>
+    <div>
+        <p>On the surface, I can understand how this would cause concern. Especially 
+            without the <a href="https://github.com/jbanes/versus-js/blob/main/documents/CODESTYLE.md">coding style</a> explicitly called out. </p>
+        <p>However, I think it’s important to understand that this is a comparison of the 
+            jQuery methods versus the ES6 methods. Both methods are (to the best of this 
+            author’s knowledge) the correct approach for the technology.</p>
+        <p>The if/else block is an idiomatic approach for handling jQuery commands to 
+            plugins. Calling <code>$(element).pagedContent("page")</code> to obtain the current page 
+            and <code>$(element).pageContent("page", 3)</code> functions exactly the same as 
+            <code>$(element).css("font-weight")</code> and 
+            <code>$(element).css("font-weight", "bold")</code>. I do not see any issues 
+            with the correctness of this implementation. It does take advantage of single-line 
+            if statements, but that is in many ways demonstrating an advantage of the 
+            jQuery approach: density of logic.</p>
+        <p>Some argued that the getters/setters on the class were unnecessary resulting in code 
+            sizes being blown out. Why couldn’t I just call <code>object.page</code> and 
+            <code>object.page = 3</code>? </p>
+        <p>I must say that I initially thought I might have made a mistake here. I remembered 
+            that I had run into a problem, but I couldn’t immediately recall what the issue was. 
+            I revisited and remembered why this approach was used. </p>
+        <p>The problem stems from the need for a setter on <code>page</code>. Updating the page 
+            is supposed to call <code>render()</code>. Without a setter this change will not 
+            happen. To be symmetrical I need both a getter and a setter on <code>page</code>. 
+            With a getter/setter for <code>page</code>, it seemed to make sense to provide a 
+            getter for <code>pages</code> so that the API remains consistent. I honestly 
+            believe that this is the “correct” way to handle this and is how it would be 
+            implemented in real-world software.</p>
+        <p>However, I made an attempt at 
+            <a href="https://github.com/jbanes/versus-js/blob/main/Original/ES6/alternate.html">rework to  
+            eliminate the getters/setters</a>. This version exposes a single method to update the current 
+            page with the <code>page</code> and <code>pages</code> properties acting as read-only values. 
+            There is no enforcement of this making it a somewhat more dangerous approach. But it does 
+            drop the code size of the ES6 version from 94 to 83 lines. Still 46% more code than the 
+            jQuery version, but better. Not a major win though.</p>
+        <p>The next most persuasive argument is the number of empty lines in the render function of 
+            <code>PagedContent</code>:</p>
+    </div>
+    <div class="codeblocks">
+        <code class="javascript" start-line="41" min-width="576px">
+        render()
+        {
+            let page = this.page;
+
+            this.elements.forEach(function(element, index) {
+                let info = document.createElement("div");
+
+                info.textContent = "Page " + page;
+
+                element.replaceChildren(info);
+            });
+        }
+        </code>
+    </div>
+    <div>
+        <p>This is quite a bit larger than the jQuery version which ended up so small 
+            it fit on a single line (Line 27):</p>
+    </div>
+    <div class="codeblocks">
+        <code class="javascript" start-line="22" min-width="576px">
+        if(operation === "page" &amp;&amp; value) this.data("page", value);
+        else if(operation === "page") return this.data("page");
+        else if(operation === "pages") return this.data("pages");
+
+        //Render
+        this.empty().append("&lt;div&gt;").text("Page " + this.data("page"));
+        </code>
+    </div>
+    <div>
+        <p>There was no intent to defraud here. The task was so simple in jQuery that it fit 
+            within a single 80-character line. You can see that in comparison to the if 
+            statements above it is nearly the same size. Though there is a bug in line 27 that 
+            ended up not affecting functionality, the corrected code would have been within 80 
+            characters. </p>
+    </div>
+    <div class="codeblocks">
+        <code class="javascript" start-line="26" min-width="576px">
+        //Render
+        this.empty().append($("&lt;div&gt;").text("Page " + this.data("page")));
+        </code>
+    </div>
+    <div>
+        <p>Arguably, my unnecessary <code>// Render</code> comment handed the ES6 version an extra line to 
+            work with. And this isn’t the only time the ES6 version is getting a bone thrown.</p>
+        <p>If we look at the rendering for the pager, we can see line-wrapping on the jQuery call starting at line 39:</p>
+    </div>
+    <div class="codeblocks">
+        <code class="javascript" start-line="37" min-width="576px">
+        function createPage(page, selected)
+        {
+            return $("&lt;span&gt;")
+                        .addClass("page" + (selected ? " selected" : ""))
+                        .text(page)
+                        .click(function() {
+                            content.pagedContent("page", page);
+                            that.pager(content);
+                        });
+        }
+
+        this.empty().append($("&lt;span&gt;").text("Page: "));
+
+        for(let i=0; i&lt;pages; i++)
+        {
+            this.append(createPage(i+1, (page === i+1)));
+        }
+        </code>
+    </div>
+    <div>
+        <p>While we can see a similar single-line on line 48, the otherwise single-line <code>&lt;span&gt;</code> 
+            creation on line 39 is wrapped to at least 3 lines more than necessary. And no 
+            attempt was made to condense lines 50-53 into a single-line for loop.</p>
+        <p>The real reason why the ES6 is so much larger is because the current DOM APIs lack 
+            the ability to chain operations similar to jQuery. This results in separate lines 
+            for creating an element, setting the text content, and then replacing the contents of 
+            the parent element. Without the relatively new <code>element.replaceChildren()</code> 
+            even more code would have been required to clear the parent element.</p>
+        <p>Which gets to the core of my argument. The jQuery code is naturally more dense. Not due 
+            to coding style or explicit decisions made to write tighter code. But due to a couple 
+            of inherent features in jQuery:</p>
+        <ol>
+            <li>Chaining of operations</li>
+            <li>Operations apply to the entire set without an explicit iteration</li>
+            <li>Compact component model</li>
+        </ol>
+    </div>
+    <div>
+        <p>Just to punctuate this point, an attempt was made to minimize the code to demonstrate 
+            the “bad faith” supposedly on display. Instead of demonstrating bad faith it showed 
+            that the Javascript was still ~30% smaller after minification:</p>
+        <p style="text-align: center;">
+            <img src="minified.png" style="width: 80%;" alt="jQuery 716 bytes; ES6 1.0 kilobyte">
+        </p>
+        <p>Hopefully I have demonstrated that this was a fair comparison by all measures and that 
+            every decision was made in good faith. I don’t mean that my point was inherently proven. 
+            Only that the setup was fair for discussion. Given the reputational damage associated 
+            with a “bad faith” accusation, I politely request a retraction by those who made or 
+            explicitly amplified this accusation. It’s not required, but it would be appreciated.</p>
+        <p>With that out of the way let’s talk about how Travis Wagner proved that jQuery is dead... 
+            and simultaneously shows that the original findings were correct.</p>
+        <p>Confused? Read on! </p>
+    </div>
+    <div id="findings">
+        <h2>Findings</h2>
+    </div>
+    <div>
+        <p>As mentioned in the Overview, most of the submissions reached a smaller 
+            size by deleting the component model and otherwise focusing on “cleverness” to produce 
+            less code.</p>
+        <p>This was not intended as a coding competition. The goal was to show a 
+            minimum example of code that represents a real-world use case to see if the advantages 
+            of jQuery could be replicated or replaced.</p>
+        <p>None of the submissions achieved this until I received a submission by Travis Wagner. 
+            Arguably, Travis’ submission didn’t truly prove that jQuery is dead. Rather, it 
+            brought into sharp relief that there are two sides to the argument. And both happen 
+            to be correct. </p>
+    </div>
+    <div id="purejssubmission">
+        <h3>Travis Wagner’s Pure Javascript (ES6) Submission</h3>
+    </div>
+    <div>
+        <p>Travis Wagner’s submission was interesting because it clearly showed the other side 
+            of the argument and why we appear to be disagreeing in the first place. It turns 
+            out that there are two ways to write jQuery. You will land in one camp or the 
+            other depending on your preferred approach.</p>
+    </div>
+    <div id="codesize">
+        <h3>Code Size</h3>
+    </div>
+    <div>
+        <p>Let’s start at code size. Travis’ implementation comes in at only 30 lines of Javascript. 
+            A clear win against the 45 lines of jQuery, right? Not so fast. </p>
+        <p>In an effort to clear perceived issues with the original coding style, Travis used a 
+            K&R-based style with no vertical space except for separation of functions. While this 
+            doesn’t quite match a real-world style (vertical spacing around control structures is 
+            very common), it’s fully within the bounds of the conversation. I had repeatedly 
+            stated that any style is fine as long as both versions use the same style for 
+            comparison. </p>
+        <p>Reformatting the jQuery version in a best effort to match Travis’ ES6 version gives us&hellip; 
+            33 lines of code. A clear win for Travis’ version by 3 lines of code. </p>
+    </div>
+    <div>
+        <table class="stats">
+            <thead>
+                <tr>
+                    <td>Technology</td>
+                    <td>Total LOC</td>
+                    <td>Javascript LOC</td>
+                    <td>File Size</td>
+                    <td>Total Download Size</td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>jQuery</td>
+                    <td>55</td>
+                    <td>33</td>
+                    <td>2,214 bytes</td>
+                    <td>72,478 bytes</td>
+                </tr>
+                <tr>
+                    <td>ES6</td>
+                    <td>51</td>
+                    <td>30</td>
+                    <td>1,941 bytes</td>
+                    <td>1,941 bytes</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div>
+        <p>Note that I had no examples of single-line if statements to reference in 
+            Travis’ code so I left the original single-line format in the jQuery code. 
+            However, I also left wrapping on the chained jQuery statements. Something 
+            I suspect would have been flattened into single-line. Either way it doesn’t 
+            matter. These two are close enough. There is no statistically-significant 
+            difference in size.</p>
+    </div>
+    <div id="bugsandfixes">
+        <h3>Bugs & Fixes</h3>
+    </div>
+    <div>
+        <p>Travis’ submission had one major bug and one minor design issue that I strongly 
+            feel should be fixed. Here is Travis’ original submission. Click the “Page:” 
+            text to the left of the numbers to see what happens:</p>
+    </div>
+    <div class="iframes">
+        <iframe width="260" height="180" src="https://jbanes.github.io/versus-js/InnerHTML/ES6/index.html"></iframe>
+        <div>
+            <div style="margin-top: 0.3em;"><i>Travis Wagner's implementation</i></div>
+            <div style="font-size: 80%; margin-top: 2rem;">
+                [<a href="https://github.com/jbanes/versus-js/blob/main/InnerHTML/ES6/index.html">Code</a>] 
+                [<a href="https://jbanes.github.io/versus-js/InnerHTML/ES6/index.html">Direct Link</a>]
+            </div>
+        </div>
+    </div>
+    <div>
+        <p>The “Page NaN” result is due to two factors. The first is that everything in the 
+            pager bar is a click target. (Lines 36 & 37) This means if you click on “Page:” 
+            or an empty space outside the numbers you’ll activate the click handler.</p>
+        <p>The second and more minor issue is that the code is parsing the page value from 
+            the text content. (Line 38) This is using the rendered text as state data, 
+            limiting the ability of the code to detect valid clicks. </p>
+    </div>
+    <div class="codeblocks">
+        <code class="javascript" start-line="37">
+        paginationEl.addEventListener("click", (e) => {
+            const curr = Number(e.target.textContent);
+            pagedContentEl.innerHTML = renderPagedContent(curr);
+            pagedContentEl.dataset.page = String(curr);
+            pagers.forEach((el) => (el.innerHTML = renderPagination(curr, Number(pagedContentEl.dataset.pages))));
+        });
+        </code>
+    </div>
+    <div>
+        <p>After reporting these to Travis, I did a quick bug fix on these two issues to resolve the 
+            issue. (Lines 25 & 38) I was able to fix without changing the number of lines of code.</p>
+        <p></p>
+    </div>
+    <div class="codeblocks">
+        <div>
+            <code class="javascript" start-line="22" min-width="887px">
+            function renderPagination(curr, total) {
+                let text = "Page: ";
+                for (let i = 1; i &lt;= total; i++) {
+                    text += `&lt;span data-page="${i}" class="page${i === curr ? " selected" : ""}"&gt;${i}&lt;/span&gt; `;
+                }
+                return text;
+            }
+            </code>
+        </div>
+        <div>
+            <code class="javascript" start-line="37" min-width="887px">
+            paginationEl.addEventListener("click", (e) =&gt; {
+                const curr = Number(e.target.dataset.page) || Number(pagedContentEl.dataset.page);
+                pagedContentEl.innerHTML = renderPagedContent(curr);
+                pagedContentEl.dataset.page = String(curr);
+                pagers.forEach((el) =&gt; (el.innerHTML = renderPagination(curr, Number(pagedContentEl.dataset.pages))));
+            });
+            </code>
+        </div>
+    </div>
+    <div>
+        <p>The fix works by moving the state of the page number to an attribute on the <code>&lt;span&gt;</code> 
+            tag, and then detecting if the attribute exists. In the case of a missing attribute 
+            it falls back to the currently rendered page number.</p>
+    </div>
+    <div class="iframes">
+        <iframe width="260" height="180" src="https://jbanes.github.io/versus-js/InnerHTML/ES6/bugfixed.html"></iframe>
+        <div>
+            <div style="margin-top: 0.3em;"><i>Fixes applied to Travis<br> Wagner's implementation</i></div>
+            <div style="font-size: 80%; margin-top: 2rem;">
+                [<a href="https://github.com/jbanes/versus-js/blob/main/InnerHTML/ES6/bugfixed.html">Code</a>] 
+                [<a href="https://jbanes.github.io/versus-js/InnerHTML/ES6/bugfixed.html">Direct Link</a>]
+            </div>
+        </div>
+    </div>
+    <div>
+        <p>This method is very similar to the method Travis used to capture the pagedContent 
+            state, thus making the code more consistent.</p>
+    </div>
+    <div id="semanticdifferences">
+        <h3>Semantic Differences & Adjustments</h3>
+    </div>
+    <div>
+        <p>While I’m unsure if it was intentional or not, Travis’ version introduced configurable 
+            values for <code>page</code> and <code>pages</code> values in the pagedContent 
+            component. This was accomplished by adding the <code>data-page</code> and 
+            <code>data-pages</code> attributes on the HTML tag and then updating <code>data-page</code>  
+            as the page is updated by the pager. </p>
+        <p>While the number of pages would be computed in the real world by the data passed 
+            into the component (thus the use of a hard coded value as a stand-in) there’s 
+            nothing wrong with this implementation as a configurable value. The initial state 
+            of <code>data-page</code> also allows a default page other than 1 to be used. Which could be 
+            useful for remembering state between page transitions.</p>
+        <p>To ensure that both implementations match as closely as possible, I implemented this 
+            default values feature in the jQuery version. It ended up not affecting the analysis 
+            as I was able to implement the feature without additional lines of code.</p>
+    </div>
+    <div class="codeblocks">
+        <div>
+            <code class="javascript" start-line="15" min-width="606px">
+            if($.isEmptyObject(this.data())) {
+                this.data("page", (operation && operation.page) || 1);
+                this.data("pages", (operation && operation.pages) || 5);
+            }
+            </code>
+        </div>
+        <div>
+            <code class="javascript" start-line="45" min-width="606px">
+            $(document).ready(function() {
+                $(".pager").pager($("#content").pagedContent({page: 1, pages: 5}));
+            });
+            </code>
+        </div>
+    </div>
+    <div id="componentmodel">
+        <h3>Component Model</h3>
+    </div>
+    <div>
+        <p>Travis’ implementation has a weak component model implemented by related functions. 
+            The <code>renderPagedContent()</code> / <code>createPagedContent()</code> and 
+            <code>renderPagination()</code> / <code>createPagination()</code> functions can 
+            be grouped together into JS files to represent each component’s interface. The 
+            use of the top-level namespace for functions is less than ideal, but it works.</p>
+        <p>However, the specific implementation submitted does have a few problems with 
+            maintaining this model. </p>
+        <p>The most egregious is the direct update of the pagedContent element in the middle 
+            of the <code>createPagination()</code> function. (Line 39)</p>
+    </div>
+    <div class="codeblocks">
+        <code class="javascript" start-line="35">
+        function createPagination(paginationEl, pagedContentEl, pagers) {
+            paginationEl.innerHTML = renderPagination(Number(pagedContentEl.dataset.page), Number(pagedContentEl.dataset.pages));
+            paginationEl.addEventListener("click", (e) => {
+                const curr = Number(e.target.textContent);
+                pagedContentEl.innerHTML = renderPagedContent(curr);
+                pagedContentEl.dataset.page = String(curr);
+                pagers.forEach((el) => (el.innerHTML = renderPagination(curr, Number(pagedContentEl.dataset.pages))));
+            });
+        }
+        </code>
+    </div>
+    <div>
+        <p>This could have been mitigated by moving line 40 above line 39 and replacing line 39 
+            with a call to <code>createPagedContent()</code>. This would have used the 
+            exposed component function, deduplicating functionality and creating better 
+            separation of concerns.</p>
+        <p>This still leaves an issue of a secondary channel of communication through the 
+            <code>data-page</code> and <code>data-pages</code> attributes. There are a few ways 
+            to mitigate this, but it isn’t required if the attribute approach for 
+            communication is clearly documented for the components. It’s not fundamentally 
+            different than using class attributes. Just a weaker association between the 
+            function calls and the data objects. i.e. It is less “encapsulated” into a 
+            single concept.</p>
+    </div>
+    <div id="subjectiveopinion">
+        <h3>Subjective Opinion</h3>
+    </div>
+    <div>
+        <p>The most eye opening discovery from Travis’ submission is that I simply was not 
+            looking at the problem from his perspective. Just as, I assume, he wasn’t looking 
+            at it from mine.</p>
+        <p>To be clear, I would never implement a webapp this way. Many of the techniques 
+            used in this code were explicitly banned on my teams. This was due to the 
+            perceived risks carried by these techniques.</p>
+        <p>The most fundamental problem I have is the extensive use of <code>innerHTML</code> for 
+            rendering. This requires constant validation of types and content to prevent 
+            injection attacks from occurring. One little slip up and you could be exposing 
+            your users to Javascript injection attacks.</p>
+        <p>We can see there are <code>Number()</code> and <code>String()</code> casts littered 
+            everywhere in an attempt to ensure the correct type:</p>
+    </div>
+    <div class="codeblocks">
+        <code class="javascript" start-line="35" highlight="Number,String">
+        function createPagination(paginationEl, pagedContentEl, pagers) {
+            paginationEl.innerHTML = renderPagination(Number(pagedContentEl.dataset.page), Number(pagedContentEl.dataset.pages));
+            paginationEl.addEventListener("click", (e) => {
+                const curr = Number(e.target.textContent);
+                pagedContentEl.innerHTML = renderPagedContent(curr);
+                pagedContentEl.dataset.page = String(curr);
+                pagers.forEach((el) => (el.innerHTML = renderPagination(curr, Number(pagedContentEl.dataset.pages))));
+            });
+        }
+        </code>
+    </div>
+    <div>
+        <p>In fairness, these casts are also functional in many cases. The casts ensure the 
+            proper type is set so that math or string concatenation doesn’t go sideways. </p>
+        <p>Which points to my secondary concern. This code leaks state all over the place. 
+            On line 38 we see the current page number being parsed from the content of the 
+            <code>&lt;span&gt;</code> tag. Which means that the display content is now data. </p>
+        <p>This works as long as our rendering and our data match. Any update that changes the 
+            format of the page numbers would immediately fail and need to be redesigned. e.g. 
+            prefixing the word “Page” to the number, using graphics, glyphs from an icon library, etc.</p>
+        <p>As I previously demonstrated the state could be improved by setting a tag attribute 
+            in the same manner pagedContent does. Using closure to trap the 
+            value would be even better, but the template-based rendering precludes that 
+            as an option.</p>
+    </div>
+    <div class="codeblocks">
+        <div>
+            <div><i>Text rendering:</i></div>
+            <div>
+            <code class="javascript" start-line="22" min-width="694px">
+            function renderPagination(curr, total) {
+                let text = "Page: ";
+                for (let i = 1; i &lt;= total; i++) {
+                    text += `&lt;span class="page${i === curr ? " selected" : ""}"&gt;${i}&lt;/span&gt; `;
+                }
+                return text;
+            }
+            </code>
+            </div>
+        </div>
+        <div>
+            <div><i>Closure:</i></div>
+            <div>
+            <code class="javascript" start-line="37" highlight="page" min-width="694px">
+            function createPage(page, selected)
+            {
+                return $("&lt;span&gt;")
+                            .addClass("page" + (selected ? " selected" : ""))
+                            .text(page)
+                            .click(function() {
+                                content.pagedContent("page", page);
+                                that.pager(content);
+                            });
+            }
+            </code>
+            </div>
+        </div>
+    </div>
+    <div>
+        <p>To be fair, it is not always possible to use a closure technique. Drop-downs 
+            are a good example where some form of identifier for the value has to be 
+            carried in the options array. Either the <code>selectedIndex</code> is used 
+            directly or a value is stored in the <code>&lt;option&gt;</code>.</p>
+        <p>To reiterate, this is my subjective opinion and the way I prefer to design applications. 
+            This is not a reflection on the quality of the work or anyone who writes 
+            Javascript this way. The only reason we are discussing my opinion is that it 
+            gets to the heart of why we are disagreeing on whether jQuery is 
+            replaced. </p>
+    </div>
+    <div id="objectiveanalysis">
+        <h3>Objective Analysis</h3>
+    </div>
+    <div>
+        <p>Now that the dust has settled we can see that there are two clear approaches to writing jQuery:</p>
+        <ol>
+            <li>The “Structuralist” approach where tags are created and combined procedurally. 
+                This approach is quite safe as HTML is never injected into the page. User 
+                information injected into the page is always handled as text, preventing an 
+                entire class of injection and cross-site scripting attacks. The tradeoff is code 
+                density.</li>
+            <li>The “Templater” approach where snippets of HTML are created and injected into 
+                the page using the <code>.html()</code> function of jQuery. Templating provides high 
+                code density and clear visual explanation of what HTML is going to be modified and 
+                how. The tradeoff is inherent code safety.</li>
+        </ol>
+        <p>What I find interesting about this split is that it is only a split in thinking. Not a 
+            true split in actual practice. Most code bases I’ve seen in the wild will combine these 
+            methods as appropriate. </p>
+        <p>Those who fall into the “Templater” camp will often find that complex, configuration-driven 
+            rendering is easier to accomplish with structural changes responding to the configuration 
+            rather than trying to if/else their HTML templates. It's also higher performance for
+            when that matters.</p>
+        <p>Those who fall into the “Structuralist” camp may find the occasional small HTML 
+            injection safe enough and may even rely on server-side templates (e.g. JSP, ASP, 
+            PHP, etc.) for initial-state rendering. Server side templating carries all the
+            same risks as client-side templating.</p>
+        <p>With this in mind we can now answer the original question.</p>
+    </div>
+    <div id="jqueryrequired">
+        <h3>Is jQuery no longer required?</h3>
+    </div>
+    <div>
+        <p>If your thinking aligns to <i>Structuralist</i> thinking, jQuery has yet to be replaced 
+            by current DOM technology. You will be writing more code overall, but it appears 
+            you can obtain ~30% productivity improvement by using jQuery. Additionally, I 
+            find the component libraries remain quite compelling. </p>
+        <p>If your thinking aligns to <i>Templater</i> thinking, then jQuery is a dead 
+            technology to you. You will find everything you need in the current ES6 + DOM 
+            APIs. Some jQuery components may remain appealing. But I expect you’re 
+            looking towards Web Components and other non-jQuery approaches for 
+            component solutions. You may already have embraced a component library 
+            solution like React. Even if it drives a Single Page Application (SPA) 
+            approach in the bargain.</p>
+    </div>
+    <div id="stateofdiscourse">
+        <h2>State of Discourse</h2>
+    </div>
+    <div>
+        <p>This entire process was quite interesting and informative. While it was my goal 
+            to engage in intelligent discourse, the conversation branched a number of 
+            directions. Many of which feel like cause for concern.</p>
+        <p>First I want to say that truly curious and engaged engineers are still around. 
+            Taking a look at the <a href="https://github.com/jbanes/versus-js/pulls">PRs</a>, 
+            <a href="https://github.com/jbanes/versus-js/forks">Forks</a>, and 
+            <a href="https://github.com/jbanes/versus-js/issues">Issues</a> of the project 
+            shows all kinds of creative implementations. From Web Components to Umbrella JS to 
+            React, and many more! While they don’t necessarily answer the question of 
+            if jQuery is dead (many are even larger than the original ES6 implementation!) 
+            they generate interesting conversations of their own.</p>
+        <p>And I am totally here for it. These are my kinds of people. 😎</p>
+        <p>Of greater concern was the sheer number of Ad Hominem attacks I experienced. I 
+            received claims of never having written serious code in my life, completely 
+            not knowing what I am doing because I’m not automatically embracing the latest 
+            framework, and my favorite: Being just plain “retarded” for bringing it up in 
+            the first place.</p>
+        <p>Looking back at these posts I’ve made some intriguing discoveries:</p>
+        <ol>
+            <li>The X algorithms do eventually push better and/or more useful responses to the 
+                forefront. This is partly based on the community engagement with posts which 
+                drive the best content upwards. A cursory examination of the thread would find 
+                limited evidence of my concerns about poor quality responses. Which I think is 
+                overall a good thing for the conversation.</li>
+            <li>Relatively few people actually read the 
+                <a href="https://github.com/jbanes/versus-js/tree/main/Original">original 
+                analysis</a>. This is easy to see by the clamoring of “but you didn’t include 
+                the 70KB for the jQuery library!” Actually I did include that in my analysis. 
+                Which means that the majority of respondents wanted to react to the headline 
+                without engaging with the content of the analysis. This is probably to be 
+                expected on a platform like X/Twitter, which is founded on limited attention 
+                and engagement.</li>
+            <li>While it’s difficult to prove, I got the sense that many of the poor quality 
+                responses came from inexperienced developers and engineers. This makes 
+                sense as they are just beginning their careers and believe that they have 
+                learned the One True Way&trade; to successfully engineer a project. We’ve all 
+                been there. I expect they will ultimately mature.</li>
+        </ol>
+        <p>One could argue that this is my own fault for starting a serious technical 
+            conversation on X. Which is fair. But also raises the question: Where can we have 
+            this conversation?</p>
+        <p>Once upon a time we had web forums that facilitated discussions. Moderators would 
+            step in to discourage contentless posts that merely sought to attack or disparage. 
+            This encouraged well-thought out posts leading to more engaging conversations.</p>
+        <p>I was an early member of many of these back in the day. JavaLobby, OSDev, JavaGaming.org, 
+            and AtariAge all come to mind as past examples of such forums. </p>
+        <p>Today’s social media apps like X, Reddit, and Discord may have less “gatekeeping”, but I’m not 
+            sure we are better for it. Sometimes the younger generation needs to lurk and learn 
+            from the conversations of those more senior to them.</p>
+        <p>Additionally there’s the problem of interpreting tone. Conciliatory and respectful are 
+            difficult tones to convey in the written word. I expect many read my words in a more 
+            hostile tone than intended. Just as I likely read their statements with more 
+            hostility than they intended.</p>
+        <p>Unfortunately, I don’t know how to solve this. All I can do is to remind myself and others
+            that we’re all on the same side. We want to create better software while lowering the cost of 
+            creating that software. Can we work to facilitate those conversations rather than 
+            attack one another? </p>
+    </div>
+    <div id="finalthoughts">
+        <h2>Final Thoughts</h2>
+    </div>
+    <div>
+        <p>In the end I think I learned a lot about the discourse around jQuery as well as its 
+            position in the market. We’re all arguing past each other because we’re not 
+            understanding each other’s positions. </p>
+        <p>I want to thank Travis Wagner for sticking with the discussion / argument and getting 
+            us to clarity. And thanks to everyone else who participated in the discussion! I 
+            really do appreciate the time and I hope everyone else learned as much from this 
+            as I did.</p>
+        <p>Whether you are a Structuralist or a Templater, I think we have a lot to share if 
+            we can understand each other’s viewpoints. For my part I will keep using jQuery 
+            where it makes sense. And I expect others will continue to ignore it as “dead 
+            tech”. And that’s okay. </p>
+        <p>I expect the next major shift is not too far around the corner. Maybe it will be 
+            Web Components. Maybe it will be something else. Just please take the time to 
+            evaluate the technology and make sure you’re using it for the right reasons. 
+            Software Engineering was never meant to be a popularity contest.</p>
+    </div>
+    <hr>
+    <div>
+        <i>Written by Jerason Banes - September 2nd 2024</i>
+    </div>
+</body>
+</html>
