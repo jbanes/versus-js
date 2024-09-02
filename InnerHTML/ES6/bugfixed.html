@@ -35,7 +35,7 @@
     function createPagination(paginationEl, pagedContentEl, pagers) {
         paginationEl.innerHTML = renderPagination(Number(pagedContentEl.dataset.page), Number(pagedContentEl.dataset.pages));
         paginationEl.addEventListener("click", (e) => {
-            const curr = Number(e.dataset.page) || Number(pagedContentEl.dataset.page);
+            const curr = Number(e.target.dataset.page) || Number(pagedContentEl.dataset.page);
             pagedContentEl.innerHTML = renderPagedContent(curr);
             pagedContentEl.dataset.page = String(curr);
             pagers.forEach((el) => (el.innerHTML = renderPagination(curr, Number(pagedContentEl.dataset.pages))));
