@@ -82,8 +82,8 @@
                 <ul>
                     <li><a href="#purejssubmission">Travis Wagner’s Pure Javascript (ES6) Submission</a></li>
                     <li><a href="#codesize">Code Size</a></li>
-                    <li><a href="#bugsandfixes">Bugs & Fixes</a></li>
                     <li><a href="#semanticdifferences">Semantic Differences & Adjustments</a></li>
+                    <li><a href="#bugsandfixes">Bugs & Fixes</a></li>
                     <li><a href="#componentmodel">Component Model</a></li>
                     <li><a href="#subjectiveopinion">Subjective Opinion</a></li>
                     <li><a href="#objectiveanalysis">Objective Analysis</a></li>
@@ -495,9 +495,9 @@
     <div>
         <p>There was no intent to defraud here. The task was so simple in jQuery that it fit 
             within a single 80-character line. You can see that in comparison to the if 
-            statements above it is nearly the same size. Though there is a bug in line 27 that 
-            ended up not affecting functionality, the corrected code would have been within 80 
-            characters. </p>
+            statements above it is nearly the same size. Though it turns out there is a bug 
+            in line 27 that did not affect functionality. The corrected code adds 3 
+            characters and is still within 80 characters in total. </p>
     </div>
     <div class="codeblocks">
         <code class="javascript" start-line="26" min-width="576px">
@@ -536,10 +536,10 @@
             creation on line 39 is wrapped to at least 3 lines more than necessary. And no 
             attempt was made to condense lines 50-53 into a single-line for loop.</p>
         <p>The real reason why the ES6 is so much larger is because the current DOM APIs lack 
-            the ability to chain operations similar to jQuery. This results in separate lines 
+            the ability to chain operations like jQuery. This results in separate lines 
             for creating an element, setting the text content, and then replacing the contents of 
             the parent element. Without the relatively new <code>element.replaceChildren()</code> 
-            even more code would have been required to clear the parent element.</p>
+            even more code would have been required to empty the parent element.</p>
         <p>Which gets to the core of my argument. The jQuery code is naturally more dense. Not due 
             to coding style or explicit decisions made to write tighter code. But due to a couple 
             of inherent features in jQuery:</p>
@@ -573,7 +573,7 @@
             size by deleting the component model and otherwise focusing on “cleverness” to produce 
             less code.</p>
         <p>This was not intended as a coding competition. The goal was to show a 
-            minimum example of code that represents a real-world use case to see if the advantages 
+            minimum example of code that represented a real-world use case to see if the advantages 
             of jQuery could be replicated or replaced.</p>
         <p>None of the submissions achieved this until I received a submission by Travis Wagner. 
             Arguably, Travis’ submission didn’t truly prove that jQuery is dead. Rather, it 
@@ -601,7 +601,8 @@
             very common), it’s fully within the bounds of the conversation. I had repeatedly 
             stated that any style is fine as long as both versions use the same style for 
             comparison. </p>
-        <p>Reformatting the jQuery version in a best effort to match Travis’ ES6 version gives us&hellip; 
+        <p><a href="https://github.com/jbanes/versus-js/blob/main/InnerHTML/jQuery/index.html">Reformatting the jQuery version</a> 
+            in a best effort to match Travis’ ES6 version gives us&hellip; 
             33 lines of code. A clear win for Travis’ version by 3 lines of code. </p>
     </div>
     <div>
@@ -641,6 +642,54 @@
             matter. These two are close enough. There is no statistically-significant 
             difference in size.</p>
     </div>
+    <div id="semanticdifferences">
+        <h3>Semantic Differences & Adjustments</h3>
+    </div>
+    <div>
+        <p>While I’m unsure if it was intentional or not, Travis’ version introduced configurable 
+            values for the <code>page</code> and <code>pages</code> settings in the pagedContent 
+            component. This was accomplished by adding the <code>data-page</code> and 
+            <code>data-pages</code> attributes on the HTML tag and then updating <code>data-page</code>  
+            as the page is updated by the pager. </p>
+    </div>
+    <div class="codeblocks">
+        <div>
+            <code style="font-size: 10pt; font-family: SF Mono, monospace;">
+&lt;body&gt;
+    &lt;div id="top_pager" class="pager"&gt;&lt;/div&gt;
+    &lt;div id="content" class="paged-content" <span style="background-color: #f4b759;">data-page="1" data-pages="5"</span>&gt;&lt;/div&gt;
+    &lt;div id="bottom_pager" class="pager"&gt;&lt;/div&gt;
+&lt;/body&gt;
+            </code>
+        </div>
+    </div>
+    <div>
+        <p>While the number of pages would be computed in the real world by the data passed 
+            into the component (thus the use of a hard coded value as a stand-in) there’s 
+            nothing wrong with this implementation as a configurable value. The initial state 
+            of <code>data-page</code> also allows a default page other than 1 to be used. Which could be 
+            useful for remembering state between page transitions.</p>
+        <p>To ensure that both implementations match as closely as possible, I implemented this 
+            default values feature in the jQuery version. It ended up not affecting the analysis 
+            as I was able to implement the feature without additional lines of code.</p>
+    </div>
+    <div class="codeblocks">
+        <div>
+            <code class="javascript" start-line="15" min-width="606px">
+            if($.isEmptyObject(this.data())) {
+                this.data("page", (operation && operation.page) || 1);
+                this.data("pages", (operation && operation.pages) || 5);
+            }
+            </code>
+        </div>
+        <div>
+            <code class="javascript" start-line="45" min-width="606px">
+            $(document).ready(function() {
+                $(".pager").pager($("#content").pagedContent({page: 1, pages: 5}));
+            });
+            </code>
+        </div>
+    </div>
     <div id="bugsandfixes">
         <h3>Bugs & Fixes</h3>
     </div>
@@ -679,7 +728,7 @@
     </div>
     <div>
         <p>After reporting these to Travis, I did a quick bug fix on these two issues to resolve the 
-            issue. (Lines 25 & 38) I was able to fix without changing the number of lines of code.</p>
+            problem. (Lines 25 & 38) I was able to fix without changing the number of lines of code.</p>
         <p></p>
     </div>
     <div class="codeblocks">
@@ -721,43 +770,8 @@
         </div>
     </div>
     <div>
-        <p>This method is very similar to the method Travis used to capture the pagedContent 
+        <p>This method is very similar to the method used to capture the pagedContent 
             state, thus making the code more consistent.</p>
-    </div>
-    <div id="semanticdifferences">
-        <h3>Semantic Differences & Adjustments</h3>
-    </div>
-    <div>
-        <p>While I’m unsure if it was intentional or not, Travis’ version introduced configurable 
-            values for <code>page</code> and <code>pages</code> values in the pagedContent 
-            component. This was accomplished by adding the <code>data-page</code> and 
-            <code>data-pages</code> attributes on the HTML tag and then updating <code>data-page</code>  
-            as the page is updated by the pager. </p>
-        <p>While the number of pages would be computed in the real world by the data passed 
-            into the component (thus the use of a hard coded value as a stand-in) there’s 
-            nothing wrong with this implementation as a configurable value. The initial state 
-            of <code>data-page</code> also allows a default page other than 1 to be used. Which could be 
-            useful for remembering state between page transitions.</p>
-        <p>To ensure that both implementations match as closely as possible, I implemented this 
-            default values feature in the jQuery version. It ended up not affecting the analysis 
-            as I was able to implement the feature without additional lines of code.</p>
-    </div>
-    <div class="codeblocks">
-        <div>
-            <code class="javascript" start-line="15" min-width="606px">
-            if($.isEmptyObject(this.data())) {
-                this.data("page", (operation && operation.page) || 1);
-                this.data("pages", (operation && operation.pages) || 5);
-            }
-            </code>
-        </div>
-        <div>
-            <code class="javascript" start-line="45" min-width="606px">
-            $(document).ready(function() {
-                $(".pager").pager($("#content").pagedContent({page: 1, pages: 5}));
-            });
-            </code>
-        </div>
     </div>
     <div id="componentmodel">
         <h3>Component Model</h3>
