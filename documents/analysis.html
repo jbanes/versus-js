@@ -300,7 +300,7 @@
             the 70KB of the library. Which is perfectly doable if you cache a single copy of 
             jQuery across pages.</p>
         <p>But that is not the focus of my investigation. </p>
-        <p>In fact, it might surprise you to know that you’ve loaded the jQuery library at least 
+        <p>It might surprise you to know that you loaded the jQuery library at least 
             5 times when you loaded this page. It’s unlikely you noticed as they are all set to 
             load after the initial page has been retrieved. Thus we can see that code size is not 
             the only method of achieving a better experience.</p>
@@ -323,7 +323,8 @@
         <p>This observation is very powerful and represents the reason why we moved from Assembly to 
             higher level languages like C/C++, Pascal, Java, Python, etc. The 
             reasoning may seem counter-intuitive at first, but it makes sense when you think about it.</p>
-        <p>Which is easier to reason on: CPU registers holding comparison results driving conditional jumps... or a for 
+        <p>Which is easier to reason on: CPU registers holding comparison results driving conditional 
+            jumps... or a <code>for</code> 
             loop? Most would say “for loop” without batting an eye. It’s just a simpler abstraction 
             than direct manipulation of the hardware.</p>
         <p>With a metric established I drew the following conclusion: In this small benchmark jQuery 
