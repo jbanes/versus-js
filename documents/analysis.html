@@ -221,7 +221,7 @@
     <div>
         <p>The components need bi-directional communication to both update the table as well as ensure 
             that changes to the table cause components to update themselves. Distilling this down to 
-            the minimum functionality to, I came up with the following page.</p>
+            the minimum functionality I came up with the following page:</p>
     </div>
     <div class="iframes">
         <iframe width="260" height="180" src="https://jbanes.github.io/versus-js/Original/jQuery/index.html"></iframe>
@@ -309,7 +309,7 @@
         <p>Productivity is going to be heavily affected by quality of requirements and proper alignment 
             of technology selection. If and only if these factors are correctly handled will the jQuery 
             vs. ES6 question matter. So this matters to me, but not everyone will share my interest as 
-            many have more basic concerns. e.g. If you incorrectly select React despite a misalignment 
+            many have more basic concerns. e.g. If you incorrectly select Angular despite a misalignment 
             with that technology, no amount of code size improvement will help. Your team will be 
             spending their time fighting their technology stack.</p>
         <p>Assuming all other factors are equal, how do we compare productivity? The best metric we have 
@@ -326,7 +326,7 @@
         <p>Which is easier to reason on: CPU registers holding comparison results driving conditional jumps... or a for 
             loop? Most would say “for loop” without batting an eye. It’s just a simpler abstraction 
             than direct manipulation of the hardware.</p>
-        <p>With the metric established I drew the following conclusion: In this small benchmark jQuery 
+        <p>With a metric established I drew the following conclusion: In this small benchmark jQuery 
             appeared to be 30-50% more productive.</p>
     </div>
     <div id="codingstyle">
@@ -354,13 +354,13 @@
     </div>
     <div>
         <p>Most of the submissions I received seemed to think the goal was to produce the smallest 
-            amount of code possible for the minimalist functionality shown on screen. To that end, 
+            amount of code possible for the minimal functionality shown on screen. To that end, 
             they typically stripped away the component model and sometimes even modified 
             functionality to make it easier to reduce code sizes. The code was small 
             while lacking any form of reusability. It proved nothing about jQuery versus ES6 
             approaches.</p>
         <p>Trying to correct this misconception was met with fierce negativity, arguing that the 
-            code not present reusability and therefore such an argument 
+            code did not demonstrate reusability and therefore the argument 
             was invalid. This continues to miss the point. The code is very clearly designed 
             for reusability. Here are 
             <a href="https://github.com/jbanes/versus-js/tree/main/Library">three examples</a> of 
@@ -380,7 +380,7 @@
             visible pagers a permanent fixture in a bar at the top of the window. The pager will remain 
             visible even if the page were to scroll.</p>
         <p>All of this is to demonstrate the original purpose: real-world analog code that can be 
-            updated to demonstrate how jQuery has been made obsolete. The expectation is that any 
+            updated to demonstrate jQuery's obsolescence. The expectation is that any 
             reimplementation would focus on the replacement of jQuery. Not on trying to make as 
             tight of code as possible. Something which is rarely the focus of shipping software.</p>
     </div>
@@ -459,8 +459,8 @@
             There is no enforcement of this making it a somewhat more dangerous approach. But it does 
             drop the code size of the ES6 version from 94 to 83 lines. Still 46% more code than the 
             jQuery version, but better. Not a major win though.</p>
-        <p>The next most persuasive argument is the number of empty lines in the render function of 
-            <code>PagedContent</code>:</p>
+        <p>The next most persuasive argument is the number of empty lines imposed by the coding style
+            in the <code>render()</code> function of <code>PagedContent</code>:</p>
     </div>
     <div class="codeblocks">
         <code class="javascript" start-line="41" min-width="576px">
@@ -494,10 +494,9 @@
     </div>
     <div>
         <p>There was no intent to defraud here. The task was so simple in jQuery that it fit 
-            within a single 80-character line. You can see that in comparison to the if 
-            statements above it is nearly the same size. Though it turns out there is a bug 
+            within a single 80-character line. It does turn out there is a bug 
             in line 27 that did not affect functionality. The corrected code adds 3 
-            characters and is still within 80 characters in total. </p>
+            characters. The final line is still under 80 characters in total. </p>
     </div>
     <div class="codeblocks">
         <code class="javascript" start-line="26" min-width="576px">
@@ -533,10 +532,10 @@
     </div>
     <div>
         <p>We can see a similar statement in single-line form on line 48. The otherwise single-line <code>&lt;span&gt;</code> 
-            creation on line 39 is wrapped to at least 3 lines more than necessary. And no 
-            attempt was made to condense lines 50-53 into a single-line for loop.</p>
-        <p>The real reason why the ES6 is so much larger is because the current DOM APIs lack 
-            the ability to chain operations like jQuery. This results in separate statements 
+            creation on line 39 is wrapped to at least 3 lines more than required. And no 
+            attempt was made to condense lines 50-53 into a single-line <code>for</code> loop.</p>
+        <p>The real reason why the ES6 is so much larger is because the DOM APIs lack 
+            the ability to chain operations. This results in separate statements 
             for creating an element, setting the text content, and then replacing the contents of 
             the parent element. Without the relatively new <code>element.replaceChildren()</code> 
             even more code would have been required to empty the parent element.</p>
@@ -557,7 +556,8 @@
             <img src="minified.png" style="width: 80%;" alt="jQuery 716 bytes; ES6 1.0 kilobyte">
         </p>
         <p>Hopefully I have demonstrated that this was a fair comparison by all measures and that 
-            every decision was made in good faith. I don’t mean that my point was inherently proven. 
+            every decision was made in good faith.</p>
+        <p>I don’t mean that my point was inherently proven. 
             Only that the setup was fair for discussion. Given the reputational damage associated 
             with a “bad faith” accusation, I politely request a retraction by those who made or 
             explicitly amplified this accusation. It’s not required, but it would be appreciated.</p>
@@ -777,8 +777,8 @@
     </div>
     <div>
         <p>Travis’ implementation has a weak component model implemented by related functions. 
-            The <code>renderPagedContent()</code> / <code>createPagedContent()</code> and 
-            <code>renderPagination()</code> / <code>createPagination()</code> functions can 
+            The <code>createPagedContent()</code> / <code>renderPagedContent()</code> and 
+            <code>createPagination()</code> / <code>renderPagination()</code> functions can 
             be grouped together into JS files to represent each component’s interface. The 
             use of the top-level namespace for functions is less than ideal, but it works.</p>
         <p>However, the specific implementation submitted does have a few problems with 
@@ -802,8 +802,8 @@
     <div>
         <p>This could have been mitigated by moving line 40 above line 39 and replacing line 39 
             with a call to <code>createPagedContent()</code>. This would have used the 
-            exposed component function, deduplicating functionality and creating better 
-            separation of concerns.</p>
+            exposed component function to update the contents, deduplicating functionality 
+            and creating better separation of concerns.</p>
         <p>This still leaves an issue of a secondary channel of communication through the 
             <code>data-page</code> and <code>data-pages</code> attributes. There are a few ways 
             to mitigate this, but it isn’t required if the attribute approach for 
@@ -851,7 +851,7 @@
         <p>This works as long as our rendering and our data match. Any update that changes the 
             format of the page numbers would immediately fail and need to be redesigned. e.g. 
             prefixing the word “Page” to the number, using graphics, glyphs from an icon library, etc.</p>
-        <p>As I previously demonstrated the state could be improved by setting a tag attribute 
+        <p>As previously demonstrated, the state could be improved by setting a tag attribute 
             in the same manner pagedContent does. Using closure to trap the 
             value would be even better, but the template-based rendering precludes that 
             as an option.</p>
@@ -881,7 +881,7 @@
                             .addClass("page" + (selected ? " selected" : ""))
                             .text(page)
                             .click(function() {
-                                content.pagedContent("page", page);
+                                content.pagedContent("page", page); //Enclosed
                                 that.pager(content);
                             });
             }
@@ -893,7 +893,8 @@
         <p>To be fair, it is not always possible to use a closure technique. Drop-downs 
             are a good example where some form of identifier for the value has to be 
             carried in the options array. Either the <code>selectedIndex</code> is used 
-            directly or a value is stored in the <code>&lt;option&gt;</code>.</p>
+            directly or a value is stored in the <code>&lt;option&gt;</code> tag. Yet I
+            will still reach for closure whenever it is possible.</p>
         <p>To reiterate, this is my subjective opinion and the way I prefer to design applications. 
             This is not a reflection on the quality of the work or anyone who writes 
             Javascript this way. The only reason we are discussing my opinion is that it 
@@ -917,15 +918,15 @@
                 how. The tradeoff is inherent code safety.</li>
         </ol>
         <p>What I find interesting about this split is that it is only a split in thinking. Not a 
-            true split in actual practice. Most code bases I’ve seen in the wild will combine these 
+            true split in real-world practice. Most code bases I’ve seen will combine these 
             methods as appropriate. </p>
         <p>Those who fall into the “Templater” camp will often find that complex, configuration-driven 
             rendering is easier to accomplish with structural changes responding to the configuration 
             rather than trying to if/else their HTML templates. It's also higher performance for
             when that matters.</p>
-        <p>Those who fall into the “Structuralist” camp may find the occasional small HTML 
+        <p>Those who fall into the “Structuralist” camp may find the occasional HTML 
             injection safe enough and may even rely on server-side templates (e.g. JSP, ASP, 
-            PHP, etc.) for initial-state rendering. Server side templating carries all the
+            PHP, etc.) for initial-state rendering. Server side templating carries the
             same risks as client-side templating.</p>
         <p>With this in mind we can now answer the original question.</p>
     </div>
