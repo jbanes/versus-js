@@ -106,7 +106,7 @@
     </div>
     <div class="codeblocks">
         <div>
-            <code class="javascript" min-width="486px">
+            <code class="javascript" min-width="468px">
             let div = $("&lt;div&gt;")
                 .addClass(className)
                 .css("font-weight", (selected ? "bold" : "normal"))
@@ -116,11 +116,11 @@
             </code>
         </div>
         <div>
-            <code class="javascript" min-width="486px">
+            <code class="javascript" min-width="468px">
             let html = `&lt;div class="${className}" ` +
-                       `style="${(selected ? "bold" : "normal")}"&gt;` +
-                       `This is a test element` +
-                        `&lt;/div&gt`;
+                       `style="font-weight: ` +
+                       `${(selected ? "bold" : "normal")}"&gt;` +
+                       `This is a test element&lt;/div&gt;`;
             
             parentNode.html(html);
             </code>
