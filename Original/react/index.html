@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>React Demonstration</title>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <style>
+    .pager { margin: 5px 10px; user-select: none; -webkit-user-select: none; font-family: sans-serif; }
+    .pager .page { display: inline-block; padding: 0px 5px; cursor: pointer; }
+    .pager .page:active { color: red; }
+    .selected { font-weight: bold; color: red; }
+    .paged-content { font: bold 250% sans-serif; padding: 25px 10px; }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+    <script>
+        function PagedContent({ id, page }) {
+            const props = { id, className: 'paged-content' };
+            return React.createElement('div', props, `Page ${page}`);
+        }
+
+        function Pager({ id, pages, page, setPage }) {
+            return React.createElement('div', { id, className: 'pager' }, [
+                React.createElement('span', { key: 'intro' }, 'Page: '),
+                ...new Array(pages).fill(null).map((_, index) => {
+                    function onClick() {
+                      setPage(index + 1);
+                    };
+                    const className = `page${index + 1 === page ? ' selected' : ''}`;
+                    const props = { key: index, onClick, className };
+                    return React.createElement('span', props, index + 1);
+                }),
+            ]);
+        }
+
+        function MyApp() {
+            const pages = 5;
+            const [page, setPage] = React.useState(1);
+
+            return React.createElement(
+                React.Fragment,
+                {},
+                React.createElement(Pager, { id: 'top_pager', pages, page, setPage }),
+                React.createElement(PagedContent, { id: 'content', page }),
+                React.createElement(Pager, { id: 'bottom_pager', pages, page, setPage })
+            );
+        }
+
+        const container = document.getElementById('root');
+        const root = ReactDOM.createRoot(container);
+        root.render(React.createElement(MyApp));
+    </script>
+</body>
+</html>
