@@ -8,5 +8,7 @@ You can see the original files for the conversation by visiting the Original fol
 
 [https://github.com/jbanes/versus-js/tree/main/Original](https://github.com/jbanes/versus-js/tree/main/Original)
 
-Stay tuned for the updated analysis!
+Final analysis has been completed and is avaialble here:
+
+[https://jbanes.github.io/versus-js/documents/analysis.html]
 
