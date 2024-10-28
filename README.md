@@ -10,5 +10,5 @@ You can see the original files for the conversation by visiting the Original fol
 
 Final analysis has been completed and is avaialble here:
 
-[https://jbanes.github.io/versus-js/documents/analysis.html]
+[https://jbanes.github.io/versus-js/documents/analysis.html](https://jbanes.github.io/versus-js/documents/analysis.html)
 
